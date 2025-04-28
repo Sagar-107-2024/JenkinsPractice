@@ -6,7 +6,7 @@ pipeline {
     }
 
     environment {
-        REPO_URL = 'https://github.com/jain-santosh/web-cicd-practice.git'
+        REPO_URL = 'https://github.com/Sagar-107-2024/JenkinsPractice.git'
         IMAGE_NAME = 'react-app'
         CONTAINER_NAME = 'react-app-container'
         HOST_PORT = '5000'
