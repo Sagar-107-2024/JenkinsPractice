@@ -2,14 +2,11 @@ pipeline {
     agent any
 
     tools {
-        nodejs 'NodeJS 23'
+        nodejs 'NodeJS 23' // This name must match what's configured in Jenkins -> Global Tool Configuration
     }
 
     environment {
-        REPO_URL = 'https://github.com/Sagar-107-2024/JenkinsPractice.git'
-        IMAGE_NAME = 'react-app'
-        CONTAINER_NAME = 'react-app-container'
-        HOST_PORT = '5000'
+        REPO_URL = 'https://github.com/Sagar-107-2024/JenkinsPractice.git' // Replace with your repo
     }
 
     stages {
@@ -21,42 +18,32 @@ pipeline {
 
         stage('Install Dependencies') {
             steps {
+                echo 'Installing node modules...'
                 bat 'npm install'
             }
         }
 
-        stage('Build React App') {
+        stage('Build App') {
             steps {
+                echo 'Building the React app...'
                 bat 'npm run build'
             }
         }
 
-        stage('Build Docker Image') {
+        stage('Archive Build') {
             steps {
-                echo '🛠 Building Docker image...'
-                bat "docker build -t %IMAGE_NAME% ."
-            }
-        }
-
-        stage('Run Docker Container') {
-            steps {
-                echo '🧹 Removing old container (if any)...'
-                catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
-                    bat "docker rm -f %CONTAINER_NAME%"
-                }
-
-                echo '🚀 Starting new container...'
-                bat "docker run -d -p %HOST_PORT%:80 --name %CONTAINER_NAME% %IMAGE_NAME%"
+                echo 'Archiving build artifacts...'
+                archiveArtifacts artifacts: 'build/**', fingerprint: true
             }
         }
     }
 
     post {
         success {
-            echo '✅ Docker container deployed successfully.'
+            echo '✅ Build completed successfully.'
         }
         failure {
-            echo '❌ Pipeline failed.'
+            echo '❌ Build failed. Check console output.'
         }
     }
 }
